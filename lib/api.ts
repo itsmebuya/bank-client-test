@@ -5,18 +5,18 @@ import type {
   Currency,
   ExchangeRate,
   Transaction,
-} from "@/lib/types";
+} from '@/lib/types';
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ||
+  'http://localhost:5000';
 
 export class ApiError extends Error {
   status: number;
 
   constructor(message: string, status: number) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.status = status;
   }
 }
@@ -32,14 +32,14 @@ async function apiRequest<T>(
   options: RequestOptions = {},
 ): Promise<T> {
   const headers = new Headers(init.headers);
-  headers.set("Accept", "application/json");
+  headers.set('Accept', 'application/json');
 
-  if (init.body && !headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
+  if (init.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
   }
 
   if (options.token) {
-    headers.set("Authorization", `Bearer ${options.token}`);
+    headers.set('Authorization', `Bearer ${options.token}`);
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -55,9 +55,9 @@ async function apiRequest<T>(
     }
 
     const message =
-      typeof data?.message === "string"
+      typeof data?.message === 'string'
         ? data.message
-        : "Алдаа гарлаа. Дахин оролдоно уу.";
+        : 'Алдаа гарлаа. Дахин оролдоно уу.';
 
     throw new ApiError(message, response.status);
   }
@@ -65,7 +65,9 @@ async function apiRequest<T>(
   return data as T;
 }
 
-async function readJson(response: Response): Promise<Record<string, unknown> | null> {
+async function readJson(
+  response: Response,
+): Promise<Record<string, unknown> | null> {
   const text = await response.text();
 
   if (!text) {
@@ -88,25 +90,25 @@ export function getErrorMessage(error: unknown) {
     return error.message;
   }
 
-  return "Алдаа гарлаа. Дахин оролдоно уу.";
+  return 'Алдаа гарлаа. Дахин оролдоно уу.';
 }
 
 export function login(username: string, password: string) {
-  return apiRequest<AuthResponse>("/api/auth/login", {
-    method: "POST",
+  return apiRequest<AuthResponse>('/api/auth/login', {
+    method: 'POST',
     body: JSON.stringify({ username, password }),
   });
 }
 
 export function register(username: string, password: string) {
-  return apiRequest<AuthResponse>("/api/auth/register", {
-    method: "POST",
+  return apiRequest<AuthResponse>('/api/auth/register', {
+    method: 'POST',
     body: JSON.stringify({ username, password }),
   });
 }
 
 export function listAccounts(token: string, onUnauthorized: () => void) {
-  return apiRequest<{ accounts: Account[] }>("/api/accounts", undefined, {
+  return apiRequest<{ accounts: Account[] }>('/api/accounts', undefined, {
     token,
     onUnauthorized,
   });
@@ -118,9 +120,9 @@ export function createAccount(
   onUnauthorized: () => void,
 ) {
   return apiRequest<{ message: string; account: Account }>(
-    "/api/accounts",
+    '/api/accounts',
     {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(payload),
     },
     { token, onUnauthorized },
@@ -143,9 +145,9 @@ export function createTransaction(
     transaction: Transaction;
     transactions?: Transaction[];
   }>(
-    "/api/transactions",
+    '/api/transactions',
     {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(payload),
     },
     { token, onUnauthorized },
@@ -159,7 +161,7 @@ export function listTransactions(
 ) {
   const params = search.trim()
     ? `?search=${encodeURIComponent(search.trim())}`
-    : "";
+    : '';
 
   return apiRequest<{ transactions: Transaction[] }>(
     `/api/transactions${params}`,
@@ -169,14 +171,14 @@ export function listTransactions(
 }
 
 export function listAdminUsers(token: string, onUnauthorized: () => void) {
-  return apiRequest<{ users: AdminUser[] }>("/api/users", undefined, {
+  return apiRequest<{ users: AdminUser[] }>('/api/users', undefined, {
     token,
     onUnauthorized,
   });
 }
 
 export function getRates(token: string, onUnauthorized: () => void) {
-  return apiRequest<{ rates: ExchangeRate[] }>("/api/rates", undefined, {
+  return apiRequest<{ rates: ExchangeRate[] }>('/api/rates', undefined, {
     token,
     onUnauthorized,
   });
